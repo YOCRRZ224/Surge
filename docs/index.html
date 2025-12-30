@@ -1,0 +1,388 @@
+
+<!DOCTYPE html>  <html lang="en">  
+<head>  
+<meta charset="UTF-8">  
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">  
+    <link  
+      rel="stylesheet"  
+      type="text/css"  
+      href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css"  
+    />  
+    <link  
+      rel="stylesheet"  
+      type="text/css"  
+      href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css"  
+    />  
+<title>Edge Surf+ Full</title>  
+<style>  
+body{margin:0;background:#000;font-family:monospace;color:white;overflow:hidden;}  
+.glass{background:rgba(255,255,255,0.08);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.15);border-radius:14px;padding:16px;margin:10px;}  
+.screen{position:fixed;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;background-size:cover;background-position:center;z-index:10;}  
+.hidden{display:none;}  
+button{background:rgba(255,255,255,0.15);color:white;border:none;padding:10px 22px;margin:6px;border-radius:10px;font-size:14px;cursor:pointer;}  
+button:hover{background:rgba(255,255,255,0.25);}  
+.skin-picker,.env-picker{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}  
+.skin,.env{width:52px;height:52px;border-radius:8px;border:2px solid #888;cursor:pointer;}  
+.active{border-color:#00ffd5;box-shadow:0 0 12px #00ffd5;}  
+#hud{position:fixed;top:10px;left:10px;right:10px;display:flex;justify-content:space-between;align-items:center;z-index:5;pointer-events:none;}  
+#hearts img{width:24px;margin-right:4px;}  
+#powerHUD img{width:22px;margin-left:6px;}  
+#score{font-size:18px;}  
+.ctrl{position:absolute;bottom:20px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;justify-content:center;align-items:center;font-size:36px;}  
+#left{left:20px;}#right{right:20px;}  
+canvas{display:none;}  
+.achievement-popup{position:fixed;top:10%;left:50%;transform:translateX(-50%);background:rgba(0,255,255,0.2);padding:10px 20px;border-radius:10px;border:1px solid #0ff;color:white;font-weight:bold;z-index:50;display:none;}  
+#achievementsMenu {  
+    position: fixed;  
+    top: 10%;  
+    left: 50%;  
+    transform: translateX(-50%);  
+    width: 300px;  
+    max-height: 80%;  
+    overflow-y: auto;  
+    z-index: 50;  
+    background: rgba(0,0,0,0.85);  
+    border: 2px solid #0ff;  
+    border-radius: 12px;  
+    padding: 16px;  
+    display: none;  
+}  
+#pauseBtn{  
+  position: fixed;  
+  top: 14px;  
+  right: 14px;  
+  width: 48px;  
+  height: 48px;  
+  border-radius: 12px;  
+  background: rgba(0,255,255,0.15);  
+  backdrop-filter: blur(10px);  
+  border: 1px solid rgba(0,255,255,0.4);  
+  display: none; /* 🔥 IMPORTANT */  
+  align-items: center;  
+  justify-content: center;  
+  z-index: 20;  
+  cursor: pointer;  
+}  #pauseBtn i{
+font-size: 26px;
+color: #0ff;
+}
+
+#pauseBtn:active{
+transform: scale(0.92);
+}
+</style>
+
+</head>  
+<body>  <!-- HOME -->  <div id="home" class="screen" style="background-image:url('assets/ui/bg.jpg')">  
+  <div class="glass">  
+    <h1>EDGE SURF+</h1>  
+    <p>High Score: <span id="homeHigh">0</span></p>  
+  </div>    <div class="glass">  
+    <img src="assets/ui/trophy.png" style="width:50px;cursor:pointer;"   
+         onclick="playSFX('click'); toggleAchievements()" title="Achievements">  
+  </div>    <div id="achievementsMenu" class="glass">  
+    <h2>Achievements</h2>  
+    <div id="achievementsList"></div>  
+    <hr>  
+    <div id="lockedAchievementsList"></div>  
+    <button onclick="playSFX('click'); closeAchievements()">Close</button>  
+  </div>    <div class="glass">  
+    <h3>Skins</h3>  
+    <div class="skin-picker">  
+      <img src="assets/skins/default.png" class="skin active" onclick="setSkin(this,'assets/skins/default.png'); playSFX('click')">  
+      <img src="assets/skins/jake.png" class="skin" onclick="setSkin(this,'assets/skins/jake.png'); playSFX('click')">  
+      <img src="assets/skins/sonic.png" class="skin" onclick="setSkin(this,'assets/skins/sonic.png'); playSFX('click')">  
+       <img src="assets/skins/minecraft.png" class="skin" onclick="setSkin(this,'assets/skins/minecraft.png'); playSFX('click')">  
+        <img src="assets/skins/amongus.png" class="skin" onclick="setSkin(this,'assets/skins/amongus.png'); playSFX('click')">  
+    </div>  
+  </div>    <div class="glass">  
+    <h3>Environment</h3>  
+    <div class="env-picker">  
+      <img src="assets/ui/envior/default.jpg" class="env active" onclick="setEnv(this,'default'); playSFX('click')">  
+      <img src="assets/ui/envior/jungle.jpg" class="env" onclick="setEnv(this,'jungle'); playSFX('click')">  
+      <img src="assets/ui/envior/lab.png" class="env" onclick="setEnv(this,'lab'); playSFX('click')">  
+      <img src="assets/ui/envior/amongus.jpg" class="env" onclick="setEnv(this,'amongus'); playSFX('click')">  
+      <img src="assets/ui/envior/minecraft.png" class="env" onclick="setEnv(this,'minecraft'); playSFX('click')">  
+    </div>  
+  </div>    <div class="glass">  
+    <button onclick="setDifficulty('easy'); playSFX('click')"><i class="ph ph-smiley"></i></button>  
+    <button onclick="setDifficulty('normal'); playSFX('click')"><i class="ph ph-smiley-meh"></i></button>  
+    <button onclick="setDifficulty('hard'); playSFX('click')"><i class="ph ph-smiley-angry"></i></button>  
+  </div>  <button onclick="playSFX('click'); startGame()"><i class="ph ph-game-controller"></i></button>
+
+</div>  <!-- PAUSE -->  <div id="pause" class="screen hidden glass">  
+  <h2><i class="ph ph-pause"></i></h2>  
+  <button onclick="playSFX('click'); resumeGame()"><i class="ph ph-play"></i></button>  
+  <button onclick="playSFX('click'); goHome()"><i class="ph ph-house-line"></i></button>  
+</div>  <!-- GAME OVER -->  <div id="gameover" class="screen hidden glass">  
+  <h2>Game Over</h2>  
+  <p>Score: <span id="finalScore"></span></p>  
+  <p>High Score: <span id="finalHigh"></span></p>  
+  <button onclick="playSFX('click'); startGame()"><i class="ph ph-arrows-clockwise"></i></button>  
+  <button onclick="playSFX('click'); goHome()"><i class="ph ph-house-line"></i></button>  
+</div>  
+<div id="pauseBtn" onclick="playSFX('click'); togglePause()">  
+  <i class="ph ph-pause"></i>  
+</div>  
+<div id="hud" class="hidden">  
+  <div id="hearts"></div>  
+  <div id="powerHUD"></div>  
+  <div id="score">0</div>  
+</div>  <div id="left" class="ctrl hidden"><i class="ph ph-caret-left"></i></div>  
+<div id="right" class="ctrl hidden"><i class="ph ph-caret-right"></i></div>  
+<canvas id="c"></canvas>  
+<div id="achievementPopup" class="achievement-popup"></div>  <script>  
+/* ================= SETUP ================= */  
+const c=document.getElementById("c"),ctx=c.getContext("2d");  
+function resize(){c.width=innerWidth;c.height=innerHeight;} resize(); addEventListener("resize",resize);  
+const OBSTACLE_PRESETS = {  
+  default: [  
+    { w: 48, h: 48 },  
+    { w: 64, h: 64 },  
+    { w: 96, h: 96 }  
+  ],  
+  jungle: [  
+    { w: 56, h: 56 },  
+    { w: 80, h: 80 },  
+    { w: 120, h: 120 }  
+  ],  
+  lab: [  
+    { w: 52, h: 52 },  
+    { w: 72, h: 72 },  
+    { w: 100, h: 100 }  
+  ],  
+  amongus: [  
+    { w: 64, h: 64 },  
+    { w: 96, h: 96 },  
+    { w: 140, h: 140 }  
+  ],  
+  minecraft: [  
+    { w: 48, h: 48 },  
+    { w: 64, h: 64 },  
+    { w: 96, h: 96 }  
+  ]  
+};  
+function togglePause(){  
+  if(!running) return;  
+  
+  if(paused){  
+    resumeGame();  
+  } else {  
+    pauseGame();  
+  }  
+}  
+/* ================= ASSETS ================= */  
+const heartImg=new Image(); heartImg.src="assets/ui/heart.png";  
+const envImgs={ default:"assets/ui/envior/default.jpg", jungle:"assets/ui/envior/jungle.jpg", lab:"assets/ui/envior/lab.png", amongus:"assets/ui/envior/amongus.jpg", minecraft:"assets/ui/envior/minecraft.png" };  
+const envCache={}; for(let k in envImgs){ envCache[k]=new Image(); envCache[k].src=envImgs[k]; }  
+const powerImgs={ shield:"assets/powerups/shield.png", speed:"assets/powerups/speed.png", slow:"assets/powerups/slow.png", mult:"assets/powerups/mult.png", life:"assets/powerups/heart.png" };  
+const obstacleAssets = {  
+  default: "assets/ui/coll/default.png",  
+  jungle: "assets/ui/coll/jungle.png",  
+  lab: "assets/ui/coll/lab.png",  
+  amongus: "assets/ui/coll/asteroid.png",  
+  minecraft: "assets/ui/coll/block.png"  
+};  
+  
+const obstacleImgs = {};  
+for (let k in obstacleAssets) {  
+  obstacleImgs[k] = new Image();  
+  obstacleImgs[k].src = obstacleAssets[k];  
+}  
+/* ================= SFX & BGM ================= */  
+const sfx={ click:new Audio("assets/sfx/click.mp3"), achievement:new Audio("assets/sfx/achievement.mp3"), heartLost:new Audio("assets/sfx/heart_lost.mp3"), powerup:new Audio("assets/sfx/powerup.mp3"), gameover:new Audio("assets/sfx/gameover.mp3"), collision:new Audio("assets/sfx/collision.mp3")};  
+for(let k in sfx) sfx[k].volume=0.5;  
+function playSFX(name){if(sfx[name]) sfx[name].play();}  
+  
+// BGM  
+const bgm = new Audio("assets/sfx/bgm1.mp3");  
+bgm.loop = true; bgm.volume = 0.3;  
+  
+/* ================= STATE ================= */  
+let running=false,paused=false,frame=0;  
+let score=0,lives=3,baseSpeed=5;  
+let obstacles=[],powerups=[];  
+let currentEnv="default",difficulty="normal";  
+  
+/* ================= PLAYER ================= */  
+let playerImg=new Image(); playerImg.src="assets/skins/default.png";  
+let player={x:0,y:0,w:48,h:48,speed:10};  
+let active={ shield:false,speed:0,slow:0,mult:0 };  
+  
+/* ================= DIFFICULTY ================= */  
+const DIFF={ easy:{speed:4,rate:90}, normal:{speed:5,rate:60}, hard:{speed:7,rate:40} };  
+  
+/* ================= INPUT ================= */  
+let keys={},touch={l:false,r:false};  
+onkeydown=e=>{  
+    keys[e.key]=true;   
+    if(e.key==='Escape') paused?resumeGame():pauseGame();  
+};  
+onkeyup=e=>keys[e.key]=false;  
+left.ontouchstart=e=>(e.preventDefault(),touch.l=true);  
+left.ontouchend=()=>touch.l=false;  
+right.ontouchstart=e=>(e.preventDefault(),touch.r=true);  
+right.ontouchend=()=>touch.r=false;  
+  
+/* ================= UI ================= */  
+function drawHearts(){ hearts.innerHTML=""; for(let i=0;i<lives;i++){ let img=document.createElement("img"); img.src=heartImg.src; hearts.appendChild(img); } }  
+function drawPowerHUD(){ powerHUD.innerHTML=""; for(let k in active){ if(active[k]){ let img=document.createElement("img"); img.src=powerImgs[k]; powerHUD.appendChild(img); } } }  
+  
+/* ================= PICKERS ================= */  
+function setSkin(el,p){ document.querySelectorAll(".skin").forEach(s=>s.classList.remove("active")); el.classList.add("active"); playerImg.src=p; }  
+function setEnv(el,e){ document.querySelectorAll(".env").forEach(x=>x.classList.remove("active")); el.classList.add("active"); currentEnv=e; }  
+function setDifficulty(d){ difficulty=d; }  
+  
+/* ================= ACHIEVEMENTS ================= */  
+const achievements=[  
+  {name:"First Steps",score:10,collected:false},  
+  {name:"Starting Journey",score:50,collected:false},  
+  {name:"New Boy in Race",score:150,collected:false},  
+  {name:"Umm Something Good",scoreEnv:50,collected:false},  
+  {name:"Tuned Car",score:500,collected:false},  
+  {name:"Fast Boy",score:700,collected:false},  
+  {name:"Invincible",hearts:10,collected:false},  
+  {name:"Absolutely Legend",score:1000,collected:false},  
+  {name:"Milk Shake",allPower:true,collected:false},  
+  {name:"Universe God",score:2000,collected:false}  
+];  
+const ACH_KEY = "edgeSurfAchievements";  
+function loadAchievements() {  
+    const saved = localStorage.getItem(ACH_KEY);  
+    if(saved){  
+        const data = JSON.parse(saved);  
+        achievements.forEach(a=>{if(data[a.name]!==undefined) a.collected=data[a.name];});  
+    }  
+}  
+function saveAchievements(){  
+    const data={}; achievements.forEach(a=>data[a.name]=a.collected);  
+    localStorage.setItem(ACH_KEY,JSON.stringify(data));  
+}  
+function showAchievement(name){  
+  const popup=document.getElementById("achievementPopup");  
+  popup.innerText="Achievement Unlocked: "+name;  
+  popup.style.display="block";  
+  playSFX("achievement");  
+  setTimeout(()=>popup.style.display="none",2500);  
+  saveAchievements();  
+}  
+function toggleAchievements(){ achievementsMenu.style.display="block"; renderAchievements(); }  
+function closeAchievements(){ achievementsMenu.style.display="none"; }  
+function renderAchievements(){  
+  const unlocked=document.getElementById("achievementsList"),locked=document.getElementById("lockedAchievementsList");  
+  unlocked.innerHTML=""; locked.innerHTML="";  
+  achievements.forEach(a=>{  
+    const div=document.createElement("div"); div.innerText=a.name + (a.collected?" ✅":" ❌");  
+    if(a.collected) unlocked.appendChild(div); else locked.appendChild(div);  
+  });  
+}  
+  
+/* ================= GAME FLOW ================= */  
+function startGame(){  
+  home.classList.add("hidden"); gameover.classList.add("hidden"); pause.classList.add("hidden");  
+  c.style.display="block"; hud.classList.remove("hidden"); left.classList.remove("hidden"); right.classList.remove("hidden");  
+  pauseBtn.style.display = "flex";  
+  score=0;lives=3;frame=0;obstacles=[];powerups=[];  
+  baseSpeed=DIFF[difficulty].speed; active={shield:false,speed:0,slow:0,mult:0};  
+  player.x=c.width/2-player.w/2; player.y=c.height-90;  
+  drawHearts(); drawPowerHUD(); document.getElementById("score").innerText=0;  
+  running=true;paused=false; loop();  
+  bgm.play();  
+}  
+function pauseGame(){ paused=true; pause.classList.remove("hidden"); bgm.pause(); }  
+function resumeGame(){ paused=false; pause.classList.add("hidden"); loop(); bgm.play(); }  
+function goHome(){ bgm.pause(); bgm.currentTime=0; location.reload(); pauseBtn.style.display = "none"; }  
+  
+/* ================= OBJECTS ================= */  
+function spawnObstacle() {  
+  const img = obstacleImgs[currentEnv];  
+  const presets = OBSTACLE_PRESETS[currentEnv];  
+  
+  // Pick random size preset  
+  const size = presets[Math.floor(Math.random() * presets.length)];  
+  
+  // Slight random scale so they don’t feel copy-paste  
+  const scale = Math.random() * 0.25 + 0.9; // 0.9 → 1.15  
+  
+  const w = size.w * scale;  
+  const h = size.h * scale;  
+  
+  const x = Math.random() * (c.width - w);  
+  
+  obstacles.push({  
+    x,  
+    y: -h,  
+    w,  
+    h,  
+    img  
+  });  
+}  
+function spawnPowerup(){  
+  let types=Object.keys(powerImgs), type=types[Math.floor(Math.random()*types.length)];  
+  let x,safe=false; while(!safe){ x=Math.random()*(c.width-30); safe=true; obstacles.forEach(o=>{ if(x<o.x+o.w+60 && x+30>o.x-60) safe=false; }); }  
+  let p={x,y:-30,s:30,type,img:new Image()}; p.img.src=powerImgs[type]; powerups.push(p);  
+}  
+  
+/* ================= LOOP ================= */  
+function loop(){  
+  if(!running||paused) return; requestAnimationFrame(loop);  
+  ctx.clearRect(0,0,c.width,c.height);  
+  ctx.drawImage(envCache[currentEnv],0,0,c.width,c.height);  
+  let curSpeed=baseSpeed*(active.slow?0.5:1);  
+  if((keys.ArrowLeft||touch.l)&&player.x>0)player.x-=player.speed;  
+  if((keys.ArrowRight||touch.r)&&player.x+player.w<c.width)player.x+=player.speed;  
+  ctx.drawImage(playerImg,player.x,player.y,player.w,player.h);  
+  
+  obstacles.forEach((o,i)=>{  
+    o.y+=curSpeed; ctx.drawImage(o.img, o.x, o.y, o.w, o.h);  
+    if(o.y>c.height){obstacles.splice(i,1); score+=active.mult?2:1; document.getElementById("score").innerText=score; checkAchievements(); }  
+    if(o.x<player.x+player.w && o.x+o.w>player.x && o.y<player.y+player.h && o.y+o.h>player.y){  
+      obstacles.splice(i,1); if(active.shield){active.shield=false;drawPowerHUD();}else{ lives--; drawHearts(); playSFX("heartLost"); if(lives<=0) return endGame(); }  
+      playSFX("collision");  
+    }  
+  });  
+  
+  powerups.forEach((p,i)=>{  
+    p.y+=curSpeed; ctx.drawImage(p.img,p.x,p.y,p.s,p.s);  
+    if(p.x<player.x+player.w && p.x+p.s>player.x && p.y<player.y+player.h && p.y+p.s>player.y){  
+      if(p.type==="shield") active.shield=true;  
+      if(p.type==="speed"){ active.speed=Date.now()+5000; player.speed=16; }  
+      if(p.type==="slow") active.slow=Date.now()+5000;  
+      if(p.type==="mult") active.mult=Date.now()+8000;  
+      if(p.type==="life" && lives<5){lives++; drawHearts(); }  
+      drawPowerHUD(); playSFX("powerup"); powerups.splice(i,1);  
+    }  
+  });  
+  
+  let now=Date.now();  
+  if(active.speed && now>active.speed){ active.speed=0; player.speed=10; }  
+  if(active.slow && now>active.slow) active.slow=0;  
+  if(active.mult && now>active.mult) active.mult=0;  
+  
+  if(frame%DIFF[difficulty].rate===0) spawnObstacle();  
+  if(frame%600===0) spawnPowerup();  
+  frame++;  
+}  
+  
+/* ================= ACHIEVEMENTS CHECK ================= */  
+function checkAchievements(){  
+  achievements.forEach(a=>{  
+    if(!a.collected){  
+      if(a.score && score>=a.score){ a.collected=true; showAchievement(a.name); }  
+      if(a.hearts && lives>=a.hearts){ a.collected=true; showAchievement(a.name); }  
+      if(a.allPower && active.shield && active.speed && active.slow && active.mult){ a.collected=true; showAchievement(a.name); }  
+    }  
+  });  
+}  
+  
+/* ================= END ================= */  
+let highScore=localStorage.getItem("highscore")||0; homeHigh.innerText=highScore;  
+function endGame(){ running=false; playSFX("gameover"); bgm.pause(); bgm.currentTime=0;  
+    if(score>highScore){ highScore=score; localStorage.setItem("highscore",score); }   
+    finalScore.innerText=score; finalHigh.innerText=highScore; gameover.classList.remove("hidden"); pauseBtn.style.display = "none"; }  
+  
+/* ================= LOAD ACHIEVEMENTS ON START ================= */  
+loadAchievements();  
+renderAchievements();  
+</script>  </body>  
+              </html>
